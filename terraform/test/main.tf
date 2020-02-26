@@ -84,7 +84,7 @@ resource "aws_ecs_service" "backend" {
   cluster         = aws_ecs_cluster.backend.id
   desired_count   = 1
   task_definition = aws_ecs_task_definition.backend.arn
-
+  launch_type     = "FARGATE"
 
   network_configuration {
     #    security_groups = [aws_security_group.ecs_tasks.id]
@@ -113,6 +113,6 @@ resource "aws_ecs_service" "backend" {
 }
 
 resource "aws_ecs_cluster" "backend" {
-  name = "white-hart"
+  name = module.bekk_test_static_json_label.id
   tags = module.bekk_test_static_json_label.tags
 }
