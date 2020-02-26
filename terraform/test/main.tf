@@ -12,14 +12,6 @@ locals {
   environment = "test"
 }
 
-variable "app_port" {
-  description = "Port exposed by the docker image to redirect traffic to"
-  default     = 80
-}
-variable "container_name" {
-  description = "Port exposed by the docker image to redirect traffic to"
-  default     = "static-json"
-}
 
 data "aws_iam_policy" "AmazonECSTaskExecutionRolePolicy" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
@@ -67,7 +59,7 @@ module "bekk_test_static_json_label" {
 resource "aws_ecs_task_definition" "backend" {
   family = module.bekk_test_static_json_label.id
   container_definitions = templatefile("task-definitions/service.json.tpl", {
-    app_image = "525817628861.dkr.ecr.eu-north-1.amazonaws.com/static-json@sha256:6edd73d5bd08e7e2d36d203bd403254c1a8e53e0c89251c063780c1470736c19",
+    app_image = "525817628861.dkr.ecr.eu-north-1.amazonaws.com/static-json:latest",
     app_port  = var.app_port
   })
   network_mode             = "awsvpc"
