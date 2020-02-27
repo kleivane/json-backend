@@ -56,29 +56,6 @@ module "bekk_test_static_json_label" {
   }
 }
 
-# replace with loadbalancer senere
-resource "aws_security_group" "ecs_task_2" {
-  name        = "${module.bekk_test_static_json_label.id}-2"
-  description = "Allow inbound access from the internet"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = var.app_port
-    to_port     = var.app_port
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = module.bekk_test_static_json_label.tags
-
-}
 
 resource "aws_ecs_task_definition" "backend" {
   family = module.bekk_test_static_json_label.id
@@ -103,16 +80,15 @@ resource "aws_ecs_service" "backend" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups  = [aws_security_group.ecs_task_2.id]
-    subnets          = aws_subnet.public.*.id
-    assign_public_ip = true
+    security_groups = [aws_security_group.ecs_tasks.id]
+    subnets         = aws_subnet.private.*.id
   }
 
-  #  load_balancer {
-  #    target_group_arn = aws_alb_target_group.app.id
-  #    container_name   = var.container_name
-  #    container_port   = var.app_port
-  #  }
+  load_balancer {
+    target_group_arn = aws_alb_target_group.backend.id
+    container_name   = var.container_name
+    container_port   = var.app_port
+  }
 
   # Allow external changes without Terraform plan difference
   # Dermed kan desired_count kunne bruke autoscaling uten at terraform apply vil kjøre endringer
@@ -121,7 +97,7 @@ resource "aws_ecs_service" "backend" {
   }
 
   depends_on = [
-    #    aws_alb_listener.front_end,
+    aws_alb_listener.backend,
     aws_iam_role_policy_attachment.ecs_task_execution
   ]
 
