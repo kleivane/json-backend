@@ -57,6 +57,7 @@ module "bekk_test_static_json_label" {
 }
 
 
+# Nettverking og nedlasting av images: https://github.com/aws/amazon-ecs-agent/issues/1128
 resource "aws_ecs_task_definition" "backend" {
   family = module.bekk_test_static_json_label.id
   container_definitions = templatefile("task-definitions/service.json.tpl", {
@@ -72,6 +73,7 @@ resource "aws_ecs_task_definition" "backend" {
 }
 
 
+# Legg til en task til i annen AZ
 resource "aws_ecs_service" "backend" {
   name            = module.bekk_test_static_json_label.id
   cluster         = aws_ecs_cluster.backend.id
