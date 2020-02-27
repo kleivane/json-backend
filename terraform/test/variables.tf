@@ -3,7 +3,7 @@ variable "app_port" {
   default     = 80
 }
 variable "container_name" {
-  description = "Port exposed by the docker image to redirect traffic to"
+  description = "Container name"
   default     = "static-json"
 }
 
